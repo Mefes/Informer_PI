@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f2ead8">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:id="@+id/imageViewIcon"
+            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
+            android:layout_marginTop="@dimen/abc_action_bar_content_inset_material" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/abc_action_bar_icon_vertical_padding_material" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Large Text"
+            android:id="@+id/textViewTag"
+            android:layout_column="0"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Large Text"
+        android:id="@+id/textViewTitle"
+        android:layout_column="0"
+        android:textColor="@android:color/black"
+        android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/textViewNews"
+        android:textColor="@android:color/black"
+        android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/abc_action_bar_content_inset_material" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/textViewDate"
+            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/textViewLikes"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/abc_action_bar_content_inset_material"
+            android:layout_gravity="right" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Информер</string>
+    <string name="action_settings">Настройки</string>
+    <string name="news">Новости</string>
+    <string name="radio">Радио</string>
+    <string name="struct">Структура</string>
+    <string name="timetable">Расписание</string>
+    <string name="web">Сайт</string>
+    <string name="polytech">Политехнический институт</string>
+    <string name="hello_blank_fragment">m</string>
+    <string name="navigation_drawer_close">nn</string>
+    <string name="navigation_drawer_open">nnn</string>
+    <string name="app_not_available">Извините, браузер не доступен</string>
+</resources>
