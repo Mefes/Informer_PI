@@ -13,9 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_launcher"
-            android:id="@+id/imageViewIcon"
-            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
-            android:layout_marginTop="@dimen/abc_action_bar_content_inset_material" />
+            android:id="@+id/imageViewIcon" />
 
         <Space
             android:layout_width="wrap_content"
@@ -42,7 +40,6 @@
         android:id="@+id/textViewTitle"
         android:layout_column="0"
         android:textColor="@android:color/black"
-        android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
         android:textStyle="bold|italic" />
 
     <TextView
@@ -51,8 +48,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/textViewNews"
-        android:textColor="@android:color/black"
-        android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material" />
+        android:textColor="@android:color/black" />
 
     <Space
         android:layout_width="match_parent"
@@ -70,8 +66,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/textViewDate"
-            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material" />
+            android:id="@+id/textViewDate" />
 
         <TextView
             android:layout_width="fill_parent"

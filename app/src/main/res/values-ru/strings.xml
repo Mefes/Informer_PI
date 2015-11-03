@@ -12,4 +12,6 @@
     <string name="navigation_drawer_close">nn</string>
     <string name="navigation_drawer_open">nnn</string>
     <string name="app_not_available">Извините, браузер не доступен</string>
+    <string name="tech_tv">TechTV</string>
+    <string name="inst">Об институте</string>
 </resources>

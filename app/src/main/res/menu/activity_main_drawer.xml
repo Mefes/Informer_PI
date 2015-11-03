@@ -2,21 +2,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_news" android:icon="@android:drawable/ic_menu_today"
+        <item
+            android:id="@+id/nav_news"
+            android:icon="@android:drawable/ic_menu_today"
             android:title="@string/news" />
-        <item android:id="@+id/nav_timetable" android:icon="@android:drawable/ic_menu_info_details"
+        <item
+            android:id="@+id/nav_timetable"
+            android:icon="@android:drawable/ic_menu_info_details"
             android:title="@string/timetable" />
-        <item android:id="@+id/nav_struct" android:icon="@android:drawable/ic_menu_my_calendar"
-            android:title="@string/struct" />
-
+        <item
+            android:id="@+id/nav_techTV"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="@string/tech_tv" />
     </group>
 
     <item android:title="@string/polytech">
         <menu>
-            <item android:id="@+id/nav_web" android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="@string/web" />
-            <item android:id="@+id/nav_radio" android:icon="@android:drawable/ic_menu_manage"
-            android:title="@string/radio" />
+            <item
+                android:id="@+id/nav_struct"
+                android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="@string/struct" />
+            <item
+                android:id="@+id/nav_web"
+                android:icon="@android:drawable/ic_menu_mapmode"
+                android:title="@string/web" />
         </menu>
     </item>
 

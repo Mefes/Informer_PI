@@ -22,4 +22,13 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:visibility="invisible"
+        android:indeterminateDrawable="@drawable/rotate"
+        android:indeterminateOnly="true"/>
+
+
 </RelativeLayout>
