@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/belka_face"
+    android:pivotX="50%"
+    android:pivotY="50%" />
+
+    <!--fromDegrees — начальный угол поворота, в градусах. По умолчанию 0.0--><!--toDegrees — конечный угол поворота, в градусах. По умолчанию 360.0--><!--pivotX — опорная точка по X--><!--pivotY — опорная точка по Y-->
