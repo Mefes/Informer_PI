@@ -333,10 +333,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void setPreference() {
-        SharedPreferences.Editor editor = studentPreference.edit();
-        editor.putInt(APP_PREFERENCES_COURSE, course);
-        editor.putInt(APP_PREFERENCES_GROUP, group);
-        editor.apply();
+        if ((course != null) && (group != null)) {
+            SharedPreferences.Editor editor = studentPreference.edit();
+            editor.putInt(APP_PREFERENCES_COURSE, course);
+            editor.putInt(APP_PREFERENCES_GROUP, group);
+            editor.apply();
+        }
     }
 
     protected void loadNews() {
