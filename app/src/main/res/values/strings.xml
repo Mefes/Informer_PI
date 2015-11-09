@@ -17,4 +17,7 @@
     <string name="app_not_available">Sorry, browser is not available</string>
     <string name="tech_tv">Tech TV</string>
     <string name="inst">About Institute</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="autolink_map">1600 Amphitheatre Parkway, Mountain View, CA 94043</string>
 </resources>

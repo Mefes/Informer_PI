@@ -7,7 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 /**
- * Created by polzovatel on 31.10.15.
+ * Created by Vladimir Kadochnikov on 31.10.15.
  */
 
 public class DialogGroupFragment extends DialogFragment {
@@ -36,8 +36,8 @@ public class DialogGroupFragment extends DialogFragment {
                                                 int id) {
                                 for (int i = 0; i < groupArray.length; i++) {
                                     if (checkedGroupItemsArray[i]) {
-                                        ((MainActivity) getActivity()).group = i;
-//                                        ((MainActivity) getActivity()).setPreference();
+                                        ((MainActivity) getActivity()).Group = i;
+                                        ((MainActivity) getActivity()).setPreference();
                                     }
                                 }
                             }

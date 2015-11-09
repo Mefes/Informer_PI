@@ -28,8 +28,7 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
 
     @Override
     protected void onPreExecute() {
-
-//        mMainActivity.progressBar.setVisibility(ProgressBar.VISIBLE);
+//        mMainActivity.ProgressBar.setVisibility(ProgressBar.VISIBLE);
         super.onPreExecute();
     }
 
@@ -39,26 +38,27 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
         SimpleAdapter mShedSimpleAdapter = null;
 
         mMainActivity = (MainActivity) params[0];
-        int Course = mMainActivity.course;
+
+        int Course = mMainActivity.Course;
 
         switch (Course) {
             case 0:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUWXJqZ2xiTnJ5N2c";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
             case 1:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUNy1mc1g0dEFvc0U";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
             case 2:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDURGlSZzN3SjZuQWs";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
             case 3:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUUFhXNGxnUk9zNm8";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
             case 4:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUZzV4am5yeXNONlU";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
             default:
-                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUWXJqZ2xiTnJ5N2c";
+                urlString = "https://drive.google.com/uc?export=download&confirm=no_antivirus&id=0B8QN8De7yDDUMl9ZdWU1SGY1d1U";
                 break;
         }
 
@@ -76,7 +76,7 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
             InputStream stream = conn.getInputStream();
             String data = convertStreamToString(stream);
 
-            int index = mMainActivity.group;
+            int index = mMainActivity.Group;
 
             JSONArray main = new JSONArray(data);
 
@@ -135,7 +135,7 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
             stream.close();
             conn.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();// ошибку поймал
         }
 
         return mShedSimpleAdapter;
@@ -144,9 +144,9 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
     @Override
     protected void onPostExecute(SimpleAdapter listAdapter) {
 
-        mMainActivity.progressBar.setVisibility(ProgressBar.INVISIBLE);
+        mMainActivity.ProgressBar.setVisibility(ProgressBar.INVISIBLE);
         super.onPostExecute(listAdapter);
-        mMainActivity.list.setAdapter(listAdapter);
+        mMainActivity.List.setAdapter(listAdapter);
 
     }
 

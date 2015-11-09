@@ -46,6 +46,7 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    //  public static final   int [] NewsIcons = new int[R.drawable.ic_action_play];
     public static final String APP_PREFERENCES = "studentsetting";
     public static final String APP_PREFERENCES_COURSE = "studentcourse";
     public static final String APP_PREFERENCES_GROUP = "studentgroup";
@@ -59,32 +60,35 @@ public class MainActivity extends AppCompatActivity
     public static final String APP_TEXT = "text";
     public static final String APP_LIKES = "likes";
     public static final String APP_DATE = "date";
+    public static final String DATE_FORMAT = "dd MMM yyyy HH:mm:ss";
     public static final String URL_POLYTECHNIC = "http://polytech.sfu-kras.ru";
     public static final Long GROUP_ID = -30617342l;
     public static final String API_ID = "4656198";
-    public static final int REQUEST_LOGIN = 1;
-    public static Api api;
-    public static Account account;
+    static final private int REQUEST_LOGIN = 1;
+    public static final Integer NEWS_COUNT = 10;
+    static final private int REQUEST_SETTINGS = 0;
+    public static Api Api;
+    public static Account Account;
     SharedPreferences studentPreference;
     boolean bRadioOn;
-    Integer count = 10, course, group;
-    ArrayList<HashMap<String, String>> myArrList = new ArrayList<HashMap<String, String>>();
-    ArrayList<WallMessage> wallMessages = null;
-    HashMap<String, String> map;
-    NewsTask newsTask;
-    Intent radioIntent = null;
-    ListView list;
-    ProgressBar progressBar;
+    Integer Course, Group;
+    ArrayList<HashMap<String, String>> NewsArrList = new ArrayList<HashMap<String, String>>();
+    ArrayList<WallMessage> WallMessages = null;
+    HashMap<String, String> Map;
+    NewsTask NewsTask;
+    Intent RadioIntent = null;
+    ListView List;
+    ProgressBar ProgressBar;
+    Toolbar Toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        account = new Account();
-        account.restore(this);
+        setInterface();
+        setSupportActionBar(Toolbar);
+        Account = new Account();
+        Account.restore(this);
         TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         TelephonyMgr.listen(new TeleListener(),
                 PhoneStateListener.LISTEN_CALL_STATE);
@@ -93,22 +97,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 {
-                    if (radioIntent == null) {
+                    if (RadioIntent == null) {
                         bRadioOn = true;
-                        radioIntent = new Intent(getApplicationContext(), Radio.class);
-                        startService(radioIntent);
+                        RadioIntent = new Intent(getApplicationContext(), Radio.class);
+                        startService(RadioIntent);
                         setnewadapter();
                     } else {
                         try {
-                            if (bRadioOn == false) {
-                                bRadioOn = true;
-                            } else {
-                                bRadioOn = false;
-                            }
-                            startService(radioIntent);
+                            bRadioOn = !bRadioOn;
+                            startService(RadioIntent);
                             setnewadapter();
                         } catch (Exception e) {
-
+//Log.d("const",)
                         }
                     }
                     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -116,15 +116,16 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, Toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         getPreference();
-        if (studentPreference.contains(APP_TAG_ARRAY + 1) == true) {
+        if (studentPreference.contains(APP_TAG_ARRAY + 1)) {
             loadNews();
         } else {
             if (!isOnline()) {// проверка подключения
@@ -132,22 +133,22 @@ public class MainActivity extends AppCompatActivity
                         "Нет соединения с интернетом!", Toast.LENGTH_LONG).show();
             } else {
 
-                if (account.access_token != null) {
-                    api = new Api(account.access_token, API_ID);
-                    if (newsTask != null) {
+                if (Account.access_token != null) {
+                    Api = new Api(Account.access_token, API_ID);
+                    if (NewsTask != null) {
                     } else {
-                        newsTask = new NewsTask();
-                        newsTask.execute();
+                        NewsTask = new NewsTask();
+                        NewsTask.execute();
                     }
                 } else {
                     Intent intent = new Intent();
                     intent.setClass(this, LoginActivity.class);
                     startActivityForResult(intent, REQUEST_LOGIN);
-                    if (account.access_token != null) {
-                        if (newsTask != null) {
+                    if (Account.access_token != null) {
+                        if (NewsTask != null) {
                         } else {
-                            newsTask = new NewsTask();
-                            newsTask.execute();
+                            NewsTask = new NewsTask();
+                            NewsTask.execute();
                         }
                     }
                 }
@@ -183,11 +184,17 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            intent.putExtra("course", Course);
+            intent.putExtra("group", Group);
+            startActivityForResult(intent, REQUEST_SETTINGS);
 
             // загрузка окна с настройками
             return true;
         }
         if (id == R.id.inst) {
+            Intent intent = new Intent(MainActivity.this, InstStructActivity.class);
+            startActivity(intent);
             //загрузка статичной окошка с структурой политеха
             return true;
         }
@@ -205,15 +212,16 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(),
                         "Нет соединения с интернетом!", Toast.LENGTH_LONG).show();
             } else {
-                if (newsTask != null) {
+                if (NewsTask != null) {
+
                 } else {
-                    newsTask = new NewsTask();
-                    newsTask.execute();
+                    NewsTask = new NewsTask();
+                    NewsTask.execute();
                 }
             }
 
         } else if (id == R.id.nav_timetable) {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            ProgressBar.setVisibility(ProgressBar.VISIBLE);
             AsyncHandleShedJSON mAsyncHandleShedJSON = new AsyncHandleShedJSON();
             mAsyncHandleShedJSON.execute(MainActivity.this);
         } else if (id == R.id.nav_struct) {
@@ -245,13 +253,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SETTINGS) {
+            if (resultCode == RESULT_OK) {
+                Course = data.getIntExtra("course", -1);
+                Group = data.getIntExtra("group", -1);
+                setPreference();
+            } else {
+//                infoTextView.setText(""); // стираем текст
+            }
+        }
         if (requestCode == REQUEST_LOGIN) {
             if (resultCode == RESULT_OK) {
                 //авторизовались успешно
-                account.access_token = data.getStringExtra("token");
-                account.user_id = data.getLongExtra("user_id", 0);
-                account.save(MainActivity.this);
-                api = new Api(account.access_token, API_ID);
+                Account.access_token = data.getStringExtra("token");
+                Account.user_id = data.getLongExtra("user_id", 0);
+                Account.save(MainActivity.this);
+                Api = new Api(Account.access_token, API_ID);
             }
         }
     }
@@ -273,12 +290,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showTable() {
-        SimpleAdapter VKSimpleAdapter = new SimpleAdapter(getApplicationContext(), myArrList, R.layout.item_news,
+        SimpleAdapter VKSimpleAdapter = new SimpleAdapter(getApplicationContext(), NewsArrList, R.layout.item_news,
                 new String[]{APP_TAG, APP_TITLE, APP_TEXT, APP_LIKES, APP_DATE},
                 new int[]{R.id.textViewTag, R.id.textViewTitle, R.id.textViewNews, R.id.textViewLikes, R.id.textViewDate});
-        list = (ListView) findViewById(R.id.listView);
         // устанавливаем адаптер списку
-        list.setAdapter(VKSimpleAdapter);
+        List.setAdapter(VKSimpleAdapter);
     }
 
     public void setnewadapter() {
@@ -311,55 +327,55 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void getPreference() {
-        studentPreference = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        if (studentPreference.contains(APP_PREFERENCES_GROUP) == true &&
-                studentPreference.contains(APP_PREFERENCES_COURSE) == true) {
-            course = studentPreference.getInt(APP_PREFERENCES_COURSE, 0);
-            group = studentPreference.getInt(APP_PREFERENCES_GROUP, 0);
+//        studentPreference = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        if (studentPreference.contains(APP_PREFERENCES_GROUP) &&
+                studentPreference.contains(APP_PREFERENCES_COURSE)) {
+            Course = studentPreference.getInt(APP_PREFERENCES_COURSE, 0);
+            Group = studentPreference.getInt(APP_PREFERENCES_GROUP, 0);
 
         } else {
-
             DialogGroupFragment dialogGroupFragment = new DialogGroupFragment();
             FragmentManager groupManager = getSupportFragmentManager();
             FragmentTransaction groupTransaction = groupManager.beginTransaction();
-            dialogGroupFragment.show(groupTransaction, "dialog");
+            dialogGroupFragment.show(groupTransaction, "dialog1");
 
             DialogCourseFragment dialogCourseFragment = new DialogCourseFragment();
             FragmentManager courseManager = getSupportFragmentManager();
             FragmentTransaction courseTransaction = courseManager.beginTransaction();
-            dialogCourseFragment.show(courseTransaction, "dialog");
+            dialogCourseFragment.show(courseTransaction, "dialog2");
         }
 
     }
 
     protected void setPreference() {
         SharedPreferences.Editor editor = studentPreference.edit();
-        editor.putInt(APP_PREFERENCES_COURSE, course);
-        editor.putInt(APP_PREFERENCES_GROUP, group);
+        editor.putInt(APP_PREFERENCES_COURSE, Course);
+        editor.putInt(APP_PREFERENCES_GROUP, Group);
         editor.apply();
     }
 
     protected void loadNews() {
 
-        for (int i = 0; i < count; i++) {
-            map = new HashMap<String, String>();
-            map.put(APP_TAG, studentPreference.getString(APP_TAG_ARRAY + i, ""));
-            map.put(APP_TITLE, studentPreference.getString(APP_TITLE_ARRAY + i, ""));
-            map.put(APP_TEXT, studentPreference.getString(APP_TEXT_ARRAY + i, ""));
-            map.put(APP_LIKES, studentPreference.getString(APP_LIKES_ARRAY + i, ""));
-            map.put(APP_DATE, studentPreference.getString(APP_DATE_ARRAY + i, ""));
-            myArrList.add(map);
+        for (int i = 0; i < NEWS_COUNT; i++) {
+            Map = new HashMap<>();
+            Map.put(APP_TAG, studentPreference.getString(APP_TAG_ARRAY + i, ""));
+            Map.put(APP_TITLE, studentPreference.getString(APP_TITLE_ARRAY + i, ""));
+            Map.put(APP_TEXT, studentPreference.getString(APP_TEXT_ARRAY + i, ""));
+            Map.put(APP_LIKES, studentPreference.getString(APP_LIKES_ARRAY + i, ""));
+            Map.put(APP_DATE, studentPreference.getString(APP_DATE_ARRAY + i, ""));
+            NewsArrList.add(Map);
         }
         showTable();
     }
 
     protected void saveNews(int i) {
         SharedPreferences.Editor editor = studentPreference.edit();
-        editor.putString(APP_TAG_ARRAY + i, map.get(APP_TAG)); //складываем элементы массива
-        editor.putString(APP_TITLE_ARRAY + i, map.get(APP_TITLE));
-        editor.putString(APP_TEXT_ARRAY + i, map.get(APP_TEXT));
-        editor.putString(APP_LIKES_ARRAY + i, map.get(APP_LIKES));
-        editor.putString(APP_DATE_ARRAY + i, map.get(APP_DATE));
+        editor.putString(APP_TAG_ARRAY + i, Map.get(APP_TAG)); //складываем элементы массива
+        editor.putString(APP_TITLE_ARRAY + i, Map.get(APP_TITLE));
+        editor.putString(APP_TEXT_ARRAY + i, Map.get(APP_TEXT));
+        editor.putString(APP_LIKES_ARRAY + i, Map.get(APP_LIKES));
+        editor.putString(APP_DATE_ARRAY + i, Map.get(APP_DATE));
         editor.apply();
     }
 
@@ -369,10 +385,10 @@ public class MainActivity extends AppCompatActivity
             switch (state) {
                 case TelephonyManager.CALL_STATE_IDLE:
                     // CALL_STATE_IDLE;
-                    if (radioIntent == null) {
+                    if (RadioIntent == null) {
                     } else {
-                        if (bRadioOn == true) {
-                            startService(radioIntent);
+                        if (bRadioOn) {
+                            startService(RadioIntent);
                         }
                     }
                     break;
@@ -381,11 +397,10 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case TelephonyManager.CALL_STATE_RINGING:
                     // CALL_STATE_RINGING
-                    if (bRadioOn == true) {
-                        if (radioIntent == null) {
-
+                    if (bRadioOn) {
+                        if (RadioIntent == null) {
                         } else {
-                            startService(radioIntent);
+                            startService(RadioIntent);
                         }
                     }
                     break;
@@ -402,15 +417,17 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
 
             super.onPreExecute();
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            ProgressBar.setVisibility(ProgressBar.VISIBLE);
         }
 
 
         @Override
         protected Void doInBackground(Void... params) {
-
+            if (Api == null) {
+                Api = new Api(Account.access_token, API_ID);
+            }
             try {
-                wallMessages = api.getWallMessages(GROUP_ID, count, 0, "all");//Получение Новостей в формате JSON
+                WallMessages = Api.getWallMessages(GROUP_ID, NEWS_COUNT, 0, "all");//Получение Новостей в формате JSON
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -418,40 +435,41 @@ public class MainActivity extends AppCompatActivity
             } catch (KException e) {
                 e.printStackTrace();
             }
-            for (int i = 0; i < count; ++i) {
-                map = new HashMap<String, String>();
-                map.put(APP_LIKES, wallMessages.get(i).like_count + " лаек");
+            NewsArrList.clear();
+            for (int i = 0; i < NEWS_COUNT; ++i) {
+                Map = new HashMap<String, String>();
+                Map.put(APP_LIKES, WallMessages.get(i).like_count + " лаек");
 //                            map.put("photo",); // получение фотографии
-                if (wallMessages.get(i).copy_history == null) {
-                    String s1 = wallMessages.get(i).text;
+                if (WallMessages.get(i).copy_history == null) {
+                    String s1 = WallMessages.get(i).text;
                     //ТЭГ
                     char[] buf = new char[s1.indexOf(" |") - s1.indexOf("#")];
                     s1.getChars(s1.indexOf("#"), s1.indexOf(" |"), buf, 0);
                     String TAG = new String(buf);
-                    map.put(APP_TAG, TAG);
+                    Map.put(APP_TAG, TAG);
                     //заголовок
                     buf = new char[(s1.indexOf("\n\n")) - (s1.indexOf("| ") + 2)];
                     s1.getChars(s1.indexOf("| ") + 2, s1.indexOf("\n\n"), buf, 0);
                     String Title = new String(buf);
-                    map.put(APP_TITLE, Title);
+                    Map.put(APP_TITLE, Title);
                     //новое заполнение даты
-                    map.put(APP_DATE, new SimpleDateFormat("dd MMM yyyy HH:mm:ss").format(new Date(wallMessages.get(i).date * (long) 1000)));
+                    Map.put(APP_DATE, new SimpleDateFormat(DATE_FORMAT).format(new Date(WallMessages.get(i).date * (long) 1000)));
                     //новости
                     buf = new char[(s1.length()) - (s1.indexOf("\n\n") + 2)];
                     s1.getChars(s1.indexOf("\n\n") + 2, s1.length(), buf, 0);
                     s1 = new String(buf);
-                    map.put(APP_TEXT, s1);
-                    myArrList.add(map);
+                    Map.put(APP_TEXT, s1);
+                    NewsArrList.add(Map);
 
                 } else {
-                    ArrayList<WallMessage> wallMessagesRepost = wallMessages.get(i).copy_history;
+                    ArrayList<WallMessage> wallMessagesRepost = WallMessages.get(i).copy_history;
                     String s1 = wallMessagesRepost.get(0).text;
                     while (wallMessagesRepost.get(0).copy_history != null) {
                         wallMessagesRepost = wallMessagesRepost.get(0).copy_history;
                         s1 = s1 + wallMessagesRepost.get(0).text;
                     }
-                    map.put(APP_TEXT, s1);
-                    myArrList.add(map);
+                    Map.put(APP_TEXT, s1);
+                    NewsArrList.add(Map);
                 }
                 saveNews(i);
             }
@@ -462,10 +480,23 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(Void aVoid) {
 
             showTable();
-            progressBar.setVisibility(ProgressBar.INVISIBLE);
-            newsTask = null;
+            ProgressBar.setVisibility(ProgressBar.INVISIBLE);
+            NewsTask = null;
             super.onPostExecute(aVoid);
         }
+    }
+
+    private void setInterface() {
+        studentPreference = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        List = (ListView) findViewById(R.id.listView);
+        ProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        Toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
     }
 
     protected boolean isOnline() {

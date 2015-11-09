@@ -25,6 +25,16 @@
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             />
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InstStructActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
         <service
             android:name=".Radio"
             android:exported="false">

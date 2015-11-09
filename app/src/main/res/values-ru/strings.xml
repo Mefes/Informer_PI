@@ -14,4 +14,7 @@
     <string name="app_not_available">Извините, браузер не доступен</string>
     <string name="tech_tv">TechTV</string>
     <string name="inst">Об институте</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="autolink_map">ул. Киренского, 26а, Красноярск, Красноярский край</string>
 </resources>

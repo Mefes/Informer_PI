@@ -37,8 +37,8 @@ public class DialogCourseFragment extends DialogFragment {
                                                 int id) {
                                 for (int i = 0; i < courseArray.length; i++) {
                                     if (checkedItemsArray[i]) {
-                                        ((MainActivity) getActivity()).course = i;
-                                        ((MainActivity) getActivity()).setPreference();
+                                        ((MainActivity) getActivity()).Course = i;
+//                                        ((MainActivity) getActivity()).setPreference();
                                     }
                                 }
                             }
