@@ -6,10 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.BaseBundle;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -22,10 +19,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -37,11 +38,17 @@ import com.perm.kate.api.WallMessage;
 
 import org.json.JSONException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 
 public class MainActivity extends AppCompatActivity
@@ -61,7 +68,9 @@ public class MainActivity extends AppCompatActivity
     public static final String APP_LIKES = "likes";
     public static final String APP_DATE = "date";
     public static final String DATE_FORMAT = "dd MMM yyyy HH:mm:ss";
+    public static final String URL_ROOT = "http://www.dennismorosoff.com/files/";
     public static final String URL_POLYTECHNIC = "http://polytech.sfu-kras.ru";
+    public static final String ARRAYGROUP = "arraygroup.txt";
     public static final Long GROUP_ID = -30617342l;
     public static final String API_ID = "4656198";
     static final private int REQUEST_LOGIN = 1;
@@ -80,12 +89,38 @@ public class MainActivity extends AppCompatActivity
     ListView List;
     ProgressBar ProgressBar;
     Toolbar Toolbar;
+    AutoCompleteTextView SearchingTextView;
+    String[] SearchingArray;
+    String str;
+    WorkData workData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        workData = new WorkData();
         setInterface();
+        File file = new File(this.getFilesDir(), ARRAYGROUP);
+        if (file.exists() && file.isFile()) {
+            try {
+                str = workData.loadData(new InputStreamReader(openFileInput(ARRAYGROUP)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            workData.execute(URL_ROOT + ARRAYGROUP);
+            try {
+                switch (str = workData.get()) {
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        SearchingArray = str.split("\r\n");
+        SearchingTextView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, SearchingArray));
         setSupportActionBar(Toolbar);
         Account = new Account();
         Account.restore(this);
@@ -208,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_news) {
+            SearchingTextView.setVisibility(EditText.INVISIBLE);
             if (!isOnline()) {
                 Toast.makeText(getApplicationContext(),
                         "Нет соединения с интернетом!", Toast.LENGTH_LONG).show();
@@ -221,12 +257,16 @@ public class MainActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_timetable) {
-            ProgressBar.setVisibility(ProgressBar.VISIBLE);
-            AsyncHandleShedJSON mAsyncHandleShedJSON = new AsyncHandleShedJSON();
-            mAsyncHandleShedJSON.execute(MainActivity.this);
+            SearchingTextView.setVisibility(EditText.VISIBLE);
+//            ProgressBar.setVisibility(ProgressBar.VISIBLE);//TODO:переделать с этого момента чтоб изменения происходили при изменении ввода
+//            AsyncHandleShedJSON mAsyncHandleShedJSON = new AsyncHandleShedJSON();
+//            mAsyncHandleShedJSON.execute(MainActivity.this);
         } else if (id == R.id.nav_struct) {
 
+            SearchingTextView.setVisibility(EditText.INVISIBLE);
+            MainActivity.this.recreate();// Err обновление окна
         } else if (id == R.id.nav_web) {
+
             if (!isOnline()) {
                 Toast.makeText(getApplicationContext(),
                         "Нет соединения с интернетом!", Toast.LENGTH_LONG).show();
@@ -243,7 +283,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         } else if (id == R.id.nav_techTV) {
-
+            SearchingTextView.setVisibility(EditText.INVISIBLE);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -350,9 +390,9 @@ public class MainActivity extends AppCompatActivity
 
     protected void setPreference() {
         if ((Course != null) && (Group != null)) {
-        SharedPreferences.Editor editor = studentPreference.edit();
-        editor.putInt(APP_PREFERENCES_COURSE, Course);
-        editor.putInt(APP_PREFERENCES_GROUP, Group);
+            SharedPreferences.Editor editor = studentPreference.edit();
+            editor.putInt(APP_PREFERENCES_COURSE, Course);
+            editor.putInt(APP_PREFERENCES_GROUP, Group);
             editor.apply();
         }
     }
@@ -489,11 +529,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setInterface() {
+        SearchingTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        SearchingTextView.addTextChangedListener(new Changer());
+//        SearchingTextView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, SearchingArray));
         studentPreference = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         List = (ListView) findViewById(R.id.listView);
         ProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         Toolbar = (Toolbar) findViewById(R.id.toolbar);
-
     }
 
     @Override
@@ -510,5 +552,29 @@ public class MainActivity extends AppCompatActivity
         } else {
             return true;
         }
+    }
+}
+
+class Changer implements TextWatcher {
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//здесь надо вводить отображение расписания
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+//        ы = mMainActivity.SearchingTextView.getText().toString();
+//        for (int i = 0; i < mMainActivity.SearchingArray.length; i++) {
+//            if (s == SearchingArray[i]){
+//
+//            }
+//        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }
