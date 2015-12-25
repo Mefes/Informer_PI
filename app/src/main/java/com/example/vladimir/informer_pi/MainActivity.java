@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -91,8 +92,10 @@ public class MainActivity extends AppCompatActivity
     Toolbar Toolbar;
     AutoCompleteTextView SearchingTextView;
     String[] SearchingArray;
-    String str;
+    List s;
+    String str, str1, str2;
     WorkData workData;
+    AsyncHandleShedJSON mAsyncHandleShedJSON = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +112,10 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else {
-            workData.execute(URL_ROOT + ARRAYGROUP);
+            workData.execute(ARRAYGROUP);
             try {
                 switch (str = workData.get()) {
+                    //TODO: произвести сохранение массива групп через класс WorkData функция saveData
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -258,11 +262,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_timetable) {
             SearchingTextView.setVisibility(EditText.VISIBLE);
-//            ProgressBar.setVisibility(ProgressBar.VISIBLE);//TODO:переделать с этого момента чтоб изменения происходили при изменении ввода
-//            AsyncHandleShedJSON mAsyncHandleShedJSON = new AsyncHandleShedJSON();
-//            mAsyncHandleShedJSON.execute(MainActivity.this);
-        } else if (id == R.id.nav_struct) {
 
+        } else if (id == R.id.nav_struct) {
+// TODO: При скрытии EditText вверху остается пустота, желательно как-то это исправить
             SearchingTextView.setVisibility(EditText.INVISIBLE);
             MainActivity.this.recreate();// Err обновление окна
         } else if (id == R.id.nav_web) {
@@ -553,28 +555,31 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
     }
-}
 
-class Changer implements TextWatcher {
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//здесь надо вводить отображение расписания
-    }
+    class Changer implements TextWatcher {
 
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-//        ы = mMainActivity.SearchingTextView.getText().toString();
-//        for (int i = 0; i < mMainActivity.SearchingArray.length; i++) {
-//            if (s == SearchingArray[i]){
-//
-//            }
-//        }
-    }
+        }
 
-    @Override
-    public void afterTextChanged(Editable s) {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            //здесь надо вводить отображение расписания
+            for (int i = 0; i < SearchingArray.length; i++) {
+                str1 = SearchingArray[i].toString();
+                str2 = s.toString();
+                if (s.toString().equals(String.valueOf(SearchingArray[i]))) {
+                    mAsyncHandleShedJSON = new AsyncHandleShedJSON();
+                    mAsyncHandleShedJSON.execute(MainActivity.this);
+                }
+            }
+        }
 
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
     }
 }

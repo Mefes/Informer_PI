@@ -3,41 +3,30 @@ package com.example.vladimir.informer_pi;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, SimpleAdapter> {
     private String times[];
-    private String dates[] = new String[6];
     private String titles[];
     private String lecturers[];
     private String rooms[];
     private MainActivity mMainActivity;
     private String urlString;
-    String WhatSearching;
+    private String WhatSearching;
     String Data;
     //    String[] SearchingArray;
-    String FILENAME = "timetable.txt";
-    String sss;
+    String FILENAME = "";
     ArrayList<HashMap<String, String>> myArrList = new ArrayList<HashMap<String, String>>();
     HashMap<String, String> map;
 
@@ -50,44 +39,41 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
     protected SimpleAdapter doInBackground(AppCompatActivity... params) {
         SimpleAdapter mShedSimpleAdapter = null;
         mMainActivity = (MainActivity) params[0];
-//        int Course = mMainActivity.Course;
         WhatSearching = mMainActivity.SearchingTextView.getText().toString();
-        for (int i = 0; i < mMainActivity.SearchingArray.length; i++) {
-            if (WhatSearching == mMainActivity.SearchingArray[i]) {
-
-            }
-        }
-        WhatSearching.toUpperCase();
-        WhatSearching.replace("М", "M"); // механика,магистратура
-        WhatSearching.replace("Т", "T"); // технологический,транспорт
-        WhatSearching.replace("Ф", "F"); // факультет
-        WhatSearching.replace("Э", "E"); // энергетика
-        WhatSearching.replace("С", "С"); // специалисты
-        WhatSearching.replace("Б", "B"); // бакалавриат
-        WhatSearching.replace("ПОДГРУППА", "p");
-
-        //TODO: если текст в компоненте не совподает с названием курса из всех названий курсов  то выходи, а иначе делай то
-
-        urlString = "http://www.dennismorosoff.com/files/" + WhatSearching + ".txt";
-        FILENAME = WhatSearching + ".txt";
+        WhatSearching = WhatSearching.toUpperCase();
+        WhatSearching = WhatSearching.replace("М", "M"); // механика,магистратура
+        WhatSearching = WhatSearching.replace("Т", "T"); // технологический,транспорт
+        WhatSearching = WhatSearching.replace("Ф", "F"); // факультет
+        WhatSearching = WhatSearching.replace("Э", "E"); // энергетика
+        WhatSearching = WhatSearching.replace("С", "С"); // специалисты
+        WhatSearching = WhatSearching.replace("Б", "B"); // бакалавриат
+        WhatSearching = WhatSearching.replace("ПОДГРУППА", "p");
+        urlString = WhatSearching + ".txt";// URL где хранится расписание группы
+        FILENAME = WhatSearching + ".txt";// Название файла
         try {
             Context context = mMainActivity;
             File file = new File(context.getFilesDir(), FILENAME);
             if (file.exists() && file.isFile()) {
-                Data = WorkData.loadData(new InputStreamReader(mMainActivity.openFileInput(FILENAME)));
+                Data = mMainActivity.workData.loadData(new InputStreamReader(mMainActivity.openFileInput(FILENAME)));
             } else {
-//                Data =WorkData.connectAndDownload(urlString);
-                WorkData.saveData(new OutputStreamWriter(mMainActivity.openFileOutput(FILENAME, Context.MODE_PRIVATE)), Data);
+                // TODO:выдает пустоту что за тк
+                //TODO:поправить
+                mMainActivity.workData.execute(urlString);
+                try {
+                    switch (Data = mMainActivity.workData.get()) {
+//                    workData.saveData(new OutputStreamWriter(openFileOutput(ARRAYGROUP+"txt", Context.MODE_PRIVATE)), str);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+//                WorkData.saveData(new OutputStreamWriter(mMainActivity.openFileOutput(FILENAME, Context.MODE_PRIVATE)), Data);
             }
 //            JSONArray main = new JSONArray(Data);//Err загрузка долгая
 
 
             // TODO: проверка какая группа введена и выдавать расписание, а также сделать для каждого дня недели
-//            int index = mMainActivity.Group;
-
-//            mMainActivity.SearchingTextView.setAdapter(new ArrayAdapter<String>(mMainActivity));
-//            for (int groupCount = 0; groupCount < main.length(); groupCount++) {
-//                if (main.getString(groupCount).equals(WhatSearching)) {
             JSONObject group = new JSONObject(Data);// TODO: переработать JSON
             for (int dayCount = 0; dayCount < 6; dayCount++) {
                 JSONArray weekdays = group.getJSONArray("weekday");
@@ -133,7 +119,8 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
         } catch (Exception e) {
             e.printStackTrace();// Err ошибку поймал
         }
-
+//    }
+//}
         return mShedSimpleAdapter;
     }
 

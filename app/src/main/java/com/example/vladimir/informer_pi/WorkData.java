@@ -90,7 +90,8 @@ public class WorkData extends AsyncTask<String, Integer, String> {
 
     @Override
     protected String doInBackground(String... URLString) {
-        connectAndDownload(URLString[0]);
+        connectAndDownload(MainActivity.URL_ROOT + URLString[0]);
+//        saveData(new OutputStreamWriter(MainActivity.openFileOutput(URLString[0], Context.MODE_PRIVATE)),Inform);
         return Inform;
     }
 
