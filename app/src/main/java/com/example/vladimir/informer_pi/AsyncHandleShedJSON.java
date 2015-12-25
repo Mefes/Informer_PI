@@ -10,8 +10,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -48,7 +54,7 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
         WhatSearching = WhatSearching.replace("С", "С"); // специалисты
         WhatSearching = WhatSearching.replace("Б", "B"); // бакалавриат
         WhatSearching = WhatSearching.replace("ПОДГРУППА", "p");
-        urlString = WhatSearching + ".txt";// URL где хранится расписание группы
+        urlString = "http://www.dennismorosoff.com/files/" + WhatSearching + ".txt";// URL где хранится расписание группы
         FILENAME = WhatSearching + ".txt";// Название файла
         try {
             Context context = mMainActivity;
@@ -58,16 +64,17 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
             } else {
                 // TODO:выдает пустоту что за тк
                 //TODO:поправить
-                mMainActivity.workData.execute(urlString);
-                try {
-                    switch (Data = mMainActivity.workData.get()) {
-//                    workData.saveData(new OutputStreamWriter(openFileOutput(ARRAYGROUP+"txt", Context.MODE_PRIVATE)), str);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                connectAndDownload(urlString);
+//                mMainActivity.workData.execute();
+//                try {
+//                    switch (Data = mMainActivity.workData.get()) {
+////                    workData.saveData(new OutputStreamWriter(openFileOutput(ARRAYGROUP+"txt", Context.MODE_PRIVATE)), str);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
 //                WorkData.saveData(new OutputStreamWriter(mMainActivity.openFileOutput(FILENAME, Context.MODE_PRIVATE)), Data);
             }
 //            JSONArray main = new JSONArray(Data);//Err загрузка долгая
@@ -172,6 +179,34 @@ public class AsyncHandleShedJSON extends AsyncTask<AppCompatActivity, Integer, S
 //        }
 //    }
 //
+public void connectAndDownload(String urlStr) {
+
+    try {
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection)
+                url.openConnection();
+        conn.setReadTimeout(100000);
+        conn.setConnectTimeout(100000);
+        conn.setRequestMethod("GET");
+        conn.setDoInput(true);
+        InputStream stream = conn.getInputStream();
+        Data = convertStreamToString(stream);
+//        saveData(Inform);
+        stream.close();
+        conn.disconnect();
+    } catch (MalformedURLException e) {
+        e.printStackTrace();
+    } catch (ProtocolException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+    static String convertStreamToString(InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
 //    private void connectAndDownload(String urlStr) {
 //        try {
 //            URL url = new URL(urlStr);
